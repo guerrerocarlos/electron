@@ -13,6 +13,7 @@
 #include "native_mate/handle.h"
 
 #if defined(OS_WIN)
+#include "atom/browser/browser_observer.h"
 #include "ui/gfx/sys_color_change_listener.h"
 #endif
 
@@ -26,6 +27,7 @@ namespace api {
 
 class SystemPreferences : public mate::EventEmitter<SystemPreferences>
 #if defined(OS_WIN)
+    , public BrowserObserver
     , public gfx::SysColorChangeListener
 #endif
   {
@@ -46,10 +48,14 @@ class SystemPreferences : public mate::EventEmitter<SystemPreferences>
   std::string GetAccentColor();
   std::string GetColor(const std::string& color, mate::Arguments* args);
 
-  void InitializeWindow();
+  void InitializeOnWindows();
+  void CreateWindow();
 
   // gfx::SysColorChangeListener:
   void OnSysColorChange() override;
+
+  // BrowserObserver:
+  void OnFinishLaunching(const base::DictionaryValue& launch_info) override;
 
 #elif defined(OS_MACOSX)
   using NotificationCallback = base::Callback<

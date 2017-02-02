@@ -114,9 +114,17 @@ std::string SystemPreferences::GetColor(const std::string& color,
   return ToRGBHex(color_utils::GetSysSkColor(id));
 }
 
-void SystemPreferences::InitializeWindow() {
+void SystemPreferences::InitializeOnWindows() {
   invertered_color_scheme_ = IsInvertedColorScheme();
 
+  // Wait until app is ready before creating offscreen window
+  if (Browser::Get()->is_ready())
+    CreateWindow();
+  else
+    Browser::Get()->AddObserver(this);
+}
+
+void SystemPreferences::CreateWindow() {
   WNDCLASSEX window_class;
   base::win::InitializeWindowClass(
       kSystemPreferencesWindowClass,

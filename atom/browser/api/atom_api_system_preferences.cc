@@ -4,6 +4,7 @@
 
 #include "atom/browser/api/atom_api_system_preferences.h"
 
+#include "atom/browser/browser.h"
 #include "atom/common/native_mate_converters/callback.h"
 #include "atom/common/native_mate_converters/value_converter.h"
 #include "atom/common/node_includes.h"
@@ -21,11 +22,14 @@ SystemPreferences::SystemPreferences(v8::Isolate* isolate)
     {
   Init(isolate);
 #if defined(OS_WIN)
-  InitializeWindow();
+  InitializeOnWindows();
 #endif
 }
 
 SystemPreferences::~SystemPreferences() {
+#if defined(OS_WIN)
+  Browser::Get()->RemoveObserver(this);
+#endif
 }
 
 #if !defined(OS_MACOSX)
